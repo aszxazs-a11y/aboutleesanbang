@@ -33,50 +33,9 @@ base.html을 상속받아 content 블록만 재정의합니다.
 
 <!-- 히어로 섹션: 홈페이지 상단의 큰 영역 -->
 <section class="hero">
-    <div class="hero-content">
-        <!-- 히어로 제목 -->
-        <!-- settings가 있고 hero_title이 있으면 표시, 없으면 기본값 -->
-        <h1 class="hero-title" data-animate="split">
-            {% if settings and settings.hero_title %}
-                {{ settings.hero_title }}
-            {% else %}
-                Welcome to My Portfolio
-            {% endif %}
-        </h1>
-
-        <!-- 히어로 설명 -->
-        <p class="hero-description" data-animate="fade">
-            {% if settings and settings.hero_description %}
-                {{ settings.hero_description }}
-            {% else %}
-                창의적인 디자인과 기술로 아이디어를 현실로 만듭니다.
-            {% endif %}
-        </p>
-
-        <!-- CTA 버튼들 -->
-        <div class="hero-buttons" data-animate="fade">
-            <a href="{% url 'work_list' %}" class="btn btn-primary">
-                작업 보기
-            </a>
-            <a href="{% url 'about' %}" class="btn btn-outline">
-                소개
-            </a>
-        </div>
-    </div>
-
-    <!-- 히어로 배경 인터랙티브 요소 -->
+    <!-- 히어로 배경 이미지 (static/images/hero-bg.jpg에 이미지 추가 시 표시됨) -->
     <div class="hero-background">
-        <div class="hero-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-        </div>
-    </div>
-
-    <!-- 스크롤 다운 인디케이터 -->
-    <div class="scroll-indicator">
-        <span>Scroll</span>
-        <div class="scroll-line"></div>
+        <div class="hero-bg-image"></div>
     </div>
 </section>
 
