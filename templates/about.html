@@ -1,0 +1,138 @@
+<!--
+===================================================================
+templates/about.html - 소개 페이지 템플릿
+===================================================================
+
+이 파일은 소개 페이지(/about/)의 HTML 구조를 정의합니다.
+
+[표시 내용]
+- 프로필 사진
+- 이름, 자기소개
+- 이메일 (복사 기능)
+- SNS 링크
+
+[전달받는 데이터]
+- profile: Profile 모델 (프로필 정보)
+- social_links: SocialLink 쿼리셋 (SNS 링크들)
+
+[JavaScript 기능]
+- 이메일 복사 버튼
+===================================================================
+-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About - 포트폴리오{% endblock %}
+
+{% block content %}
+
+<!-- 소개 페이지 -->
+<section class="about-page">
+    <div class="container">
+        <div class="about-content">
+            <!-- 프로필 영역 -->
+            <div class="about-profile" data-animate="fade">
+                <!-- 프로필 이미지 -->
+                <div class="profile-image-wrapper">
+                    {% if profile and profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}"
+                         alt="{{ profile.name }}"
+                         class="profile-image">
+                    {% else %}
+                    <!-- 프로필 이미지가 없을 경우 플레이스홀더 -->
+                    <div class="profile-image-placeholder">
+                        <span>&#128100;</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 프로필 정보 영역 -->
+            <div class="about-info" data-animate="fade">
+                <!-- 이름 -->
+                <h1 class="about-name">
+                    {% if profile %}
+                        {{ profile.name }}
+                    {% else %}
+                        이름을 입력하세요
+                    {% endif %}
+                </h1>
+
+                <!-- 자기소개 -->
+                <div class="about-bio">
+                    {% if profile %}
+                        {{ profile.bio|linebreaks }}
+                    {% else %}
+                        <p>관리자 페이지에서 프로필 정보를 입력해주세요.</p>
+                    {% endif %}
+                </div>
+
+                <!-- 이메일 -->
+                {% if profile and profile.email %}
+                <div class="about-email">
+                    <span class="email-label">Email</span>
+                    <div class="email-wrapper">
+                        <span class="email-address" id="emailAddress">{{ profile.email }}</span>
+                        <button class="email-copy-btn" id="copyEmail" title="이메일 복사">
+                            <!-- 복사 아이콘 -->
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span class="copy-tooltip">복사됨!</span>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- SNS 링크 -->
+                {% if social_links %}
+                <div class="about-social">
+                    <span class="social-label">Follow</span>
+                    <div class="social-links">
+                        {% for link in social_links %}
+                        <a href="{{ link.url }}"
+                           class="social-link"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           title="{{ link.platform }}">
+                            {{ link.platform }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 이메일 복사 기능
+const copyBtn = document.getElementById('copyEmail');
+const emailAddress = document.getElementById('emailAddress');
+
+if (copyBtn && emailAddress) {
+    copyBtn.addEventListener('click', function() {
+        // 클립보드에 이메일 복사
+        navigator.clipboard.writeText(emailAddress.textContent)
+            .then(() => {
+                // 복사 성공 시 툴팁 표시
+                copyBtn.classList.add('copied');
+
+                // 2초 후 툴팁 숨김
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('복사 실패:', err);
+            });
+    });
+}
+</script>
+{% endblock %}

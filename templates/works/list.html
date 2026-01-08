@@ -1,0 +1,112 @@
+<!--
+===================================================================
+templates/works/list.html - 작업 목록 페이지 템플릿
+===================================================================
+
+이 파일은 작업 목록 페이지(/works/)의 HTML 구조를 정의합니다.
+
+[표시 내용]
+- 카테고리 필터 버튼
+- 작업물 썸네일 그리드
+- 호버 시 작업 정보 표시
+
+[전달받는 데이터 (views.py의 work_list 함수에서)]
+- works: Work 모델 쿼리셋 (작업 목록)
+- categories: Category 모델 쿼리셋 (카테고리 목록)
+- current_category: 현재 선택된 카테고리 ID (문자열)
+
+[Django 템플릿 반복문]
+- for item in list / endfor: 목록 순회
+- empty: for 루프에서 목록이 비어있을 때 표시
+===================================================================
+-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Works - 포트폴리오{% endblock %}
+
+{% block content %}
+
+<!-- 작업 목록 페이지 헤더 -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title" data-animate="fade">Works</h1>
+        <p class="page-description" data-animate="fade">제가 작업한 프로젝트들을 소개합니다.</p>
+    </div>
+</section>
+
+<!-- 카테고리 필터 -->
+<section class="filter-section">
+    <div class="container">
+        <div class="filter-buttons" data-animate="fade">
+            <!-- 전체 보기 버튼 -->
+            <!-- current_category가 없으면 active 클래스 추가 -->
+            <a href="{% url 'work_list' %}"
+               class="filter-btn {% if not current_category %}active{% endif %}">
+                전체
+            </a>
+
+            <!-- 각 카테고리 버튼 -->
+            {% for category in categories %}
+            <!-- category.id를 문자열로 변환하여 current_category와 비교 -->
+            <a href="{% url 'work_list' %}?category={{ category.id }}"
+               class="filter-btn {% if current_category == category.id|stringformat:'d' %}active{% endif %}">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 작업 그리드 -->
+<section class="works-section">
+    <div class="container">
+        <div class="works-grid">
+            <!-- 작업 목록 순회 -->
+            {% for work in works %}
+            <article class="work-card" data-animate="fade">
+                <!-- 작업 상세 페이지로 연결되는 링크 -->
+                <a href="{% url 'work_detail' pk=work.id %}" class="work-card-link">
+                    <!-- 썸네일 이미지 -->
+                    <div class="work-card-image">
+                        {% if work.thumbnail %}
+                        <img src="{{ work.thumbnail.url }}"
+                             alt="{{ work.title }}"
+                             loading="lazy">
+                        {% else %}
+                        <!-- 썸네일이 없을 경우 플레이스홀더 -->
+                        <div class="work-card-placeholder">
+                            <span>No Image</span>
+                        </div>
+                        {% endif %}
+
+                        <!-- 호버 시 표시되는 오버레이 -->
+                        <div class="work-card-overlay">
+                            <span class="work-card-view">View Project</span>
+                        </div>
+                    </div>
+
+                    <!-- 작업 정보 -->
+                    <div class="work-card-info">
+                        <h3 class="work-card-title">{{ work.title }}</h3>
+
+                        <!-- 카테고리 태그 -->
+                        {% if work.category %}
+                        <span class="work-card-category">{{ work.category.name }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </article>
+
+            <!-- 작업이 없을 경우 -->
+            {% empty %}
+            <div class="empty-state">
+                <p>등록된 작업이 없습니다.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

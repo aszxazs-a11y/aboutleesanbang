@@ -1,0 +1,304 @@
+<!--
+===================================================================
+templates/works/detail.html - 작업 상세 페이지 템플릿
+===================================================================
+
+이 파일은 작업 상세 페이지(/works/<id>/)의 HTML 구조를 정의합니다.
+
+[표시 내용]
+- 이미지 갤러리 (여러 장)
+- 프로젝트 제목, 설명
+- 외부 링크
+- 좋아요 버튼 및 카운트
+- 댓글 목록 및 작성 폼
+- 이전/다음 작업 네비게이션
+
+[전달받는 데이터]
+- work: Work 모델 (현재 작업)
+- images: WorkImage 쿼리셋 (작업 이미지들)
+- comments: Comment 쿼리셋 (댓글들)
+- like_count: 좋아요 수
+- prev_work: 이전 작업
+- next_work: 다음 작업
+
+[CSRF 보호]
+- csrf_token: POST 요청 시 필수 보안 토큰
+===================================================================
+-->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ work.title }} - 포트폴리오{% endblock %}
+
+{% block content %}
+
+<!-- 작업 상세 페이지 -->
+<article class="work-detail">
+    <!-- 작업 헤더 -->
+    <header class="work-detail-header">
+        <div class="container">
+            <!-- 카테고리 태그 -->
+            {% if work.category %}
+            <span class="work-detail-category" data-animate="fade">{{ work.category.name }}</span>
+            {% endif %}
+
+            <!-- 작업 제목 -->
+            <h1 class="work-detail-title" data-animate="fade">{{ work.title }}</h1>
+
+            <!-- 작업 메타 정보 -->
+            <div class="work-detail-meta" data-animate="fade">
+                <span class="work-detail-date">
+                    {{ work.created_at|date:"Y년 n월 j일" }}
+                </span>
+
+                <!-- 좋아요 버튼 -->
+                <button class="like-button" data-work-id="{{ work.id }}">
+                    <span class="like-icon">&#9825;</span>
+                    <span class="like-count">{{ like_count }}</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 이미지 갤러리 -->
+    <section class="work-gallery">
+        <div class="container">
+            <div class="gallery-grid" data-animate="fade">
+                <!-- 썸네일 (메인 이미지) -->
+                {% if work.thumbnail %}
+                <div class="gallery-item gallery-main">
+                    <img src="{{ work.thumbnail.url }}"
+                         alt="{{ work.title }}"
+                         class="gallery-image"
+                         loading="lazy">
+                </div>
+                {% endif %}
+
+                <!-- 추가 이미지들 -->
+                {% for image in images %}
+                <div class="gallery-item">
+                    <img src="{{ image.image.url }}"
+                         alt="{{ work.title }} - 이미지 {{ forloop.counter }}"
+                         class="gallery-image"
+                         loading="lazy">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- 작업 설명 -->
+    <section class="work-description">
+        <div class="container">
+            <div class="work-content" data-animate="fade">
+                <!-- linebreaks 필터: 줄바꿈을 <p> 태그로 변환 -->
+                {{ work.description|linebreaks }}
+            </div>
+
+            <!-- 외부 링크 -->
+            {% if work.external_link %}
+            <div class="work-links" data-animate="fade">
+                <a href="{{ work.external_link }}"
+                   class="btn btn-primary"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    프로젝트 보기 <span>&rarr;</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- 이전/다음 네비게이션 -->
+    <nav class="work-navigation">
+        <div class="container">
+            <div class="work-nav-links">
+                <!-- 이전 작업 -->
+                {% if prev_work %}
+                <a href="{% url 'work_detail' pk=prev_work.id %}" class="work-nav-link prev">
+                    <span class="work-nav-label">&larr; 이전</span>
+                    <span class="work-nav-title">{{ prev_work.title }}</span>
+                </a>
+                {% else %}
+                <div class="work-nav-link prev disabled"></div>
+                {% endif %}
+
+                <!-- 다음 작업 -->
+                {% if next_work %}
+                <a href="{% url 'work_detail' pk=next_work.id %}" class="work-nav-link next">
+                    <span class="work-nav-label">다음 &rarr;</span>
+                    <span class="work-nav-title">{{ next_work.title }}</span>
+                </a>
+                {% else %}
+                <div class="work-nav-link next disabled"></div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- 댓글 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            <h2 class="comments-title" data-animate="fade">
+                댓글 <span class="comments-count">{{ comments.count }}</span>
+            </h2>
+
+            <!-- 댓글 작성 폼 -->
+            <form action="{% url 'add_comment' pk=work.id %}"
+                  method="post"
+                  class="comment-form"
+                  data-animate="fade">
+                <!-- CSRF 토큰: 보안을 위한 필수 항목 -->
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="author_name">닉네임</label>
+                        <input type="text"
+                               id="author_name"
+                               name="author_name"
+                               required
+                               placeholder="닉네임을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               required
+                               placeholder="삭제 시 필요합니다">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">내용</label>
+                    <textarea id="content"
+                              name="content"
+                              rows="4"
+                              required
+                              placeholder="댓글을 입력하세요"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">댓글 작성</button>
+            </form>
+
+            <!-- 댓글 목록 -->
+            <div class="comments-list" data-animate="fade">
+                {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">{{ comment.author_name }}</span>
+                        <span class="comment-date">{{ comment.created_at|date:"Y.m.d H:i" }}</span>
+                    </div>
+                    <div class="comment-content">
+                        {{ comment.content|linebreaks }}
+                    </div>
+                    <div class="comment-actions">
+                        <!-- 댓글 삭제 버튼 (모달 트리거) -->
+                        <button class="comment-delete-btn"
+                                data-comment-id="{{ comment.id }}"
+                                data-work-id="{{ work.id }}">
+                            삭제
+                        </button>
+                    </div>
+                </div>
+
+                {% empty %}
+                <div class="comments-empty">
+                    <p>아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</article>
+
+<!-- 댓글 삭제 확인 모달 -->
+<div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <h3>댓글 삭제</h3>
+        <p>댓글을 삭제하려면 비밀번호를 입력하세요.</p>
+        <form id="deleteForm" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="password"
+                       name="password"
+                       id="deletePassword"
+                       required
+                       placeholder="비밀번호">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-outline" id="cancelDelete">취소</button>
+                <button type="submit" class="btn btn-danger">삭제</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 좋아요 버튼 기능
+document.querySelector('.like-button').addEventListener('click', function() {
+    const workId = this.dataset.workId;
+    const likeCount = this.querySelector('.like-count');
+    const likeIcon = this.querySelector('.like-icon');
+
+    // CSRF 토큰 가져오기
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // AJAX 요청으로 좋아요 추가
+    fetch(`/works/${workId}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            likeCount.textContent = data.like_count;
+            likeIcon.innerHTML = '&#9829;'; // 채워진 하트로 변경
+            this.classList.add('liked');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+// 댓글 삭제 모달
+const deleteModal = document.getElementById('deleteModal');
+const deleteForm = document.getElementById('deleteForm');
+const cancelDelete = document.getElementById('cancelDelete');
+
+// 삭제 버튼 클릭 시 모달 열기
+document.querySelectorAll('.comment-delete-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const commentId = this.dataset.commentId;
+        const workId = this.dataset.workId;
+
+        // 폼 action URL 설정
+        deleteForm.action = `/works/${workId}/comment/${commentId}/delete/`;
+
+        // 모달 표시
+        deleteModal.classList.add('active');
+    });
+});
+
+// 취소 버튼 클릭 시 모달 닫기
+cancelDelete.addEventListener('click', function() {
+    deleteModal.classList.remove('active');
+    document.getElementById('deletePassword').value = '';
+});
+
+// 모달 배경 클릭 시 닫기
+deleteModal.addEventListener('click', function(e) {
+    if (e.target === deleteModal) {
+        deleteModal.classList.remove('active');
+        document.getElementById('deletePassword').value = '';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+<!--
+===================================================================
+templates/home.html - 홈페이지 템플릿
+===================================================================
+
+이 파일은 홈페이지(/)의 HTML 구조를 정의합니다.
+base.html을 상속받아 content 블록만 재정의합니다.
+
+[표시 내용]
+- 히어로 섹션: 인터랙티브 타이틀, 설명
+- 소개 섹션: 간략 소개글
+
+[전달받는 데이터 (views.py의 home 함수에서)]
+- settings: SiteSettings 모델 데이터
+  - settings.hero_title: 히어로 제목
+  - settings.hero_description: 히어로 설명
+  - settings.short_intro: 간략 소개
+
+[Django 템플릿 조건문]
+- if 조건 / endif: 조건이 참일 때만 표시
+- 변수|default:"기본값": 변수가 없으면 기본값 표시
+===================================================================
+-->
+
+<!-- base.html 템플릿을 상속받음 -->
+
+<!-- 페이지 제목 설정 -->
+{% block title %}Home - 포트폴리오{% endblock %}
+
+<!-- 메인 콘텐츠 영역 -->
+{% block content %}
+
+<!-- 히어로 섹션: 홈페이지 상단의 큰 영역 -->
+<section class="hero">
+    <div class="hero-content">
+        <!-- 히어로 제목 -->
+        <!-- settings가 있고 hero_title이 있으면 표시, 없으면 기본값 -->
+        <h1 class="hero-title" data-animate="split">
+            {% if settings and settings.hero_title %}
+                {{ settings.hero_title }}
+            {% else %}
+                Welcome to My Portfolio
+            {% endif %}
+        </h1>
+
+        <!-- 히어로 설명 -->
+        <p class="hero-description" data-animate="fade">
+            {% if settings and settings.hero_description %}
+                {{ settings.hero_description }}
+            {% else %}
+                창의적인 디자인과 기술로 아이디어를 현실로 만듭니다.
+            {% endif %}
+        </p>
+
+        <!-- CTA 버튼들 -->
+        <div class="hero-buttons" data-animate="fade">
+            <a href="{% url 'work_list' %}" class="btn btn-primary">
+                작업 보기
+            </a>
+            <a href="{% url 'about' %}" class="btn btn-outline">
+                소개
+            </a>
+        </div>
+    </div>
+
+    <!-- 히어로 배경 인터랙티브 요소 -->
+    <div class="hero-background">
+        <div class="hero-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </div>
+
+    <!-- 스크롤 다운 인디케이터 -->
+    <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+<!-- 소개 섹션 -->
+<section class="intro-section">
+    <div class="container">
+        <div class="intro-content" data-animate="fade">
+            <h2 class="section-title">About Me</h2>
+            <p class="intro-text">
+                {% if settings and settings.short_intro %}
+                    {{ settings.short_intro|linebreaks }}
+                {% else %}
+                    안녕하세요! 저는 창의적인 솔루션을 만드는 것을 즐기는 디자이너/개발자입니다.
+                    사용자 경험을 중심으로 아름답고 기능적인 디지털 제품을 만들어갑니다.
+                {% endif %}
+            </p>
+            <a href="{% url 'about' %}" class="link-arrow">
+                더 알아보기 <span>&rarr;</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

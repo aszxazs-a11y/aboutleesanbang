@@ -1,0 +1,129 @@
+<!--
+===================================================================
+templates/base.html - 기본 레이아웃 템플릿
+===================================================================
+
+이 파일은 모든 페이지의 공통 구조를 정의합니다.
+다른 템플릿들은 이 파일을 상속받아 사용합니다.
+
+[구조]
+- head: CSS, 메타태그 등
+- header: 네비게이션 메뉴
+- main: 각 페이지의 콘텐츠가 들어갈 영역
+- footer: 푸터
+- scripts: JavaScript
+
+[Django 템플릿 문법]
+- { % % }: 템플릿 태그 (로직 처리)
+- { { } }: 변수 출력
+- { % block % }{ % endblock % }: 자식 템플릿이 채울 영역
+- { % load static % }: 정적 파일 경로를 사용하기 위한 로드
+===================================================================
+-->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+    <!-- 문자 인코딩 설정 (한글 표시를 위해 UTF-8 사용) -->
+    <meta charset="UTF-8">
+
+    <!-- 반응형 디자인을 위한 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 페이지 제목 (각 페이지에서 재정의 가능) -->
+    <title>{% block title %}포트폴리오{% endblock %}</title>
+
+    <!-- CSS 파일 연결 -->
+    <!-- static 태그는 /static/css/style.css 경로로 변환됩니다 -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- 추가 CSS를 위한 블록 (자식 템플릿에서 추가 가능) -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 커스텀 커서 요소 -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- 페이지 로딩 인터랙션 -->
+    <div class="page-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
+
+    <!-- 페이지 전환 애니메이션 오버레이 -->
+    <div class="page-transition"></div>
+
+    <!-- 헤더 영역: 네비게이션 메뉴 -->
+    <header class="header">
+        <nav class="nav">
+            <!-- 로고/사이트명 -->
+            <a href="{% url 'home' %}" class="nav-logo">Portfolio</a>
+
+            <!-- 네비게이션 메뉴 -->
+            <ul class="nav-menu">
+                <li>
+                    <!-- url 태그는 urls.py에서 name='home'인 URL로 변환 -->
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'work_list' %}" class="nav-link {% if 'work' in request.resolver_match.url_name %}active{% endif %}">
+                        Works
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+                        About
+                    </a>
+                </li>
+            </ul>
+
+            <!-- 다크/라이트 모드 토글 버튼 -->
+            <button class="theme-toggle" aria-label="테마 변경">
+                <span class="theme-icon light-icon">&#9728;</span>
+                <span class="theme-icon dark-icon">&#9790;</span>
+            </button>
+
+            <!-- 모바일 메뉴 버튼 -->
+            <button class="nav-toggle" aria-label="메뉴">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <!-- block content: 자식 템플릿이 이 영역을 채웁니다 -->
+    <main class="main">
+        <!-- Django 메시지 표시 (성공/에러 알림) -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message message-{{ message.tags }}">
+                {{ message }}
+                <button class="message-close">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 푸터 영역 -->
+    <footer class="footer">
+        <p>&copy; 2025 Portfolio. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript 파일 연결 -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- 추가 JavaScript를 위한 블록 -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
