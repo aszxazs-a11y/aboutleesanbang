@@ -58,6 +58,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',      # 메시지 프레임워크
     'django.contrib.staticfiles',   # 정적 파일 관리
 
+    # 클라우드 스토리지
+    'cloudinary_storage',           # Cloudinary 스토리지
+    'cloudinary',                   # Cloudinary
+
     # 우리가 만든 앱
     'portfolio',                    # 포트폴리오 앱
 ]
@@ -187,8 +191,16 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # MEDIA_URL: 업로드된 파일에 접근하는 URL 경로
 MEDIA_URL = '/media/'
 
-# MEDIA_ROOT: 업로드된 파일이 저장되는 폴더
+# MEDIA_ROOT: 업로드된 파일이 저장되는 폴더 (로컬 개발용)
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# ===================================================================
+# Cloudinary 설정 (이미지 클라우드 스토리지)
+# ===================================================================
+# CLOUDINARY_URL 환경변수가 있으면 Cloudinary 사용 (배포용)
+if os.environ.get('CLOUDINARY_URL'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # ===================================================================
