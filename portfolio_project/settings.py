@@ -17,6 +17,7 @@ portfolio_project/settings.py - Django 프로젝트 설정 파일
 
 import os
 from pathlib import Path
+import dj_database_url
 
 # ===================================================================
 # 기본 경로 설정
@@ -121,13 +122,13 @@ WSGI_APPLICATION = 'portfolio_project.wsgi.application'
 # 데이터베이스 설정
 # ===================================================================
 # DATABASES: 데이터베이스 연결 정보
-# 기본값은 SQLite (파일 기반 데이터베이스)
-# 배포 시 PostgreSQL 등으로 변경할 수 있습니다
+# DATABASE_URL 환경변수가 있으면 PostgreSQL 사용 (배포용)
+# 없으면 SQLite 사용 (로컬 개발용)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # SQLite 사용
-        'NAME': BASE_DIR / 'db.sqlite3',         # 데이터베이스 파일 경로
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600,
+    )
 }
 
 
