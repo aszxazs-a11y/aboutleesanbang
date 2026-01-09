@@ -30,16 +30,16 @@ static/css/style.css - 메인 스타일시트
    =================================================================== */
 
 :root {
-    /* 라이트 모드 색상 */
-    --color-bg: #ffffff;
-    --color-bg-secondary: #f8f9fa;
-    --color-text: #1a1a1a;
-    --color-text-secondary: #666666;
-    --color-text-muted: #999999;
-    --color-primary: #2563eb;
-    --color-primary-hover: #1d4ed8;
-    --color-border: #e5e7eb;
-    --color-shadow: rgba(0, 0, 0, 0.1);
+    /* 메인 색상 - 검정 배경, 노란색 텍스트 */
+    --color-bg: #000000;
+    --color-bg-secondary: #111111;
+    --color-text: #FFD700;
+    --color-text-secondary: #DAA520;
+    --color-text-muted: #B8860B;
+    --color-primary: #FFD700;
+    --color-primary-hover: #FFC000;
+    --color-border: #333333;
+    --color-shadow: rgba(255, 215, 0, 0.1);
 
     /* 폰트 */
     --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -76,17 +76,17 @@ static/css/style.css - 메인 스타일시트
     --cursor-follower-size: 40px;
 }
 
-/* 다크 모드 색상 */
+/* 다크 모드 색상 (토글 비활성화로 사용 안 함) */
 [data-theme="dark"] {
-    --color-bg: #0f0f0f;
-    --color-bg-secondary: #1a1a1a;
-    --color-text: #ffffff;
-    --color-text-secondary: #a0a0a0;
-    --color-text-muted: #666666;
-    --color-primary: #3b82f6;
-    --color-primary-hover: #60a5fa;
-    --color-border: #2a2a2a;
-    --color-shadow: rgba(0, 0, 0, 0.3);
+    --color-bg: #000000;
+    --color-bg-secondary: #111111;
+    --color-text: #FFD700;
+    --color-text-secondary: #DAA520;
+    --color-text-muted: #B8860B;
+    --color-primary: #FFD700;
+    --color-primary-hover: #FFC000;
+    --color-border: #333333;
+    --color-shadow: rgba(255, 215, 0, 0.1);
 }
 
 
@@ -451,8 +451,9 @@ img {
     position: relative;
     width: 100%;
     height: 100%;
+    background-color: #000000;
     background-image: url('/static/images/hero-bg-1.png');
-    background-size: cover;
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
 }
@@ -465,8 +466,9 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
+    background-color: #000000;
     background-image: url('/static/images/hero-bg-2.png');
-    background-size: cover;
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0;
