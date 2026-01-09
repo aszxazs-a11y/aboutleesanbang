@@ -181,10 +181,6 @@ STATICFILES_DIRS = [
 # python manage.py collectstatic 명령어로 모든 정적 파일을 이 폴더로 복사
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise 설정: 정적 파일 압축 및 캐싱
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
 # ===================================================================
 # 미디어 파일 설정 (사용자 업로드 파일)
 # ===================================================================
@@ -196,11 +192,28 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # ===================================================================
-# Cloudinary 설정 (이미지 클라우드 스토리지)
+# 스토리지 설정 (Django 6.0+)
 # ===================================================================
 # CLOUDINARY_URL 환경변수가 있으면 Cloudinary 사용 (배포용)
 if os.environ.get('CLOUDINARY_URL'):
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+else:
+    # 로컬 개발용 (Cloudinary 없이)
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 
 # ===================================================================
