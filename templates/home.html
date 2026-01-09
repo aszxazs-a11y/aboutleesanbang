@@ -43,13 +43,12 @@ base.html을 상속받아 content 블록만 재정의합니다.
 <section class="intro-section">
     <div class="container">
         <div class="intro-content" data-animate="fade">
-            <h2 class="section-title">About Me</h2>
+            <h2 class="section-title">SANPOKDO 3rd</h2>
             <p class="intro-text">
                 {% if settings and settings.short_intro %}
                     {{ settings.short_intro|linebreaks }}
                 {% else %}
-                    안녕하세요! 저는 창의적인 솔루션을 만드는 것을 즐기는 디자이너/개발자입니다.
-                    사용자 경험을 중심으로 아름답고 기능적인 디지털 제품을 만들어갑니다.
+                    안녕하세요 :) 제주문화예술기획자 이산방 입니다.
                 {% endif %}
             </p>
             <a href="{% url 'about' %}" class="link-arrow">
